@@ -11,7 +11,7 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 keywords = ["telegram", "grammers", "session", "mtproto", "base64"]
 categories = ["api-bindings", "encoding", "authentication"]
-publish = false
+publish = true
 
 [dependencies]
 base64 = "0.21"

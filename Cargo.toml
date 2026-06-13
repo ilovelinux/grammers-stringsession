@@ -8,6 +8,8 @@ description = "Export/restore a grammers session as a portable base64 string."
 repository = "https://codeberg.org/ilovelinux/grammers-stringsession"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
+keywords = ["telegram", "grammers", "session", "mtproto", "base64"]
+categories = ["api-bindings", "encoding", "authentication"]
 publish = false
 
 [dependencies]

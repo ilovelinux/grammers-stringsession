@@ -1,3 +1,45 @@
 # grammers-stringsession
 
-A small utility library heavily inspired to Telethon's StringSession component, to export the session to base64 string and restore it later.
+Export and restore a [grammers session] as a portable, versioned base64 string.
+
+Inspired by Telethon's `StringSession`.
+
+## Install
+
+```sh
+cargo add grammers-stringsession
+```
+
+## Example
+
+```rust
+use grammers_session::storages::MemorySession;
+use grammers_stringsession::{export, restore};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let session = MemorySession::default();
+    // ...authenticate or restore the session as usual...
+
+    let string_session = export(&session)?;
+
+    let restored = MemorySession::default();
+    restore(&restored, string_session).await?;
+
+    Ok(())
+}
+```
+
+See the [`crate::export`] and [`crate::restore`] documentation for more details.
+
+## Format
+
+Each session string is base64-encoded with a 3-byte header (two reserved bytes
+plus a one-byte format version), so existing strings stay decodable as the
+format evolves.
+
+## License
+
+Licensed under either MIT or Apache-2.0 at your option.
+
+[grammers session]: https://docs.rs/grammers-session

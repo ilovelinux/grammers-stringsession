@@ -5,18 +5,28 @@ use grammers_session::Session;
 use grammers_session::types::DcOption;
 use std::{error, fmt};
 
+/// Returned by [`restore`] when the encoded session is invalid.
+///
+/// For example, a header shorter than three bytes or a version byte that is
+/// not recognised by this crate.
 #[derive(Debug, Clone)]
 pub struct DecodeError;
 
 impl fmt::Display for DecodeError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid base64 string")
+        write!(f, "invalid session string layout")
     }
 }
 
 impl error::Error for DecodeError {}
 
-/// Exports the session data as a string session.
+/// Serializes the `session` into a portable, base64-encoded string.
+///
+/// The returned value can later be passed to [`restore`] to repopulate a fresh
+/// session.
+///
+/// Each string carries a 3-byte header (two reserved bytes plus a one-byte
+/// format version), so older strings remain decodable as the format evolves.
 ///
 /// # Examples
 ///
@@ -29,15 +39,27 @@ impl error::Error for DecodeError {}
 ///
 /// let string_session = grammers_stringsession::export(&session).unwrap();
 /// ```
+///
 /// # Errors
 ///
-/// Will return `Err` if the serialization fails.
+/// Returns `Err` if session serialization fails.
+///
+/// # Panics
+///
+/// Panics if `session.home_dc_id()` does not correspond to a known DC option
+/// in `session`. A freshly built [`MemorySession`] has its home DC
+/// preconfigured to one of Telegram's well-known data centers, so calling
+/// `export` on it is safe. Custom [`Session`] implementations must ensure
+/// that `home_dc_id` and `dc_option` agree before exporting.
+///
+/// [`MemorySession`]: grammers_session::storages::MemorySession
+/// [`Session`]: grammers_session::Session
 pub fn export<T>(session: &T) -> Result<String, postcard::Error>
 where
     T: Session,
 {
     let Some(dc_option) = session.dc_option(session.home_dc_id()) else {
-        // According to Grammer's documentation, dc_option() returns None only if the given DC ID is unknown.
+        // According to grammer's documentation, dc_option() returns None only if the given DC ID is unknown.
         // Since we're using home_dc_id() as value, we expect it to always return a value.
         unreachable!("Home DC option not found, this should never happen");
     };
@@ -55,7 +77,9 @@ where
     Ok(encoded)
 }
 
-/// Restores the session data from a string session.
+/// Restores a session from a string previously produced by [`export`].
+///
+/// The session is decoded from `value` and imported into `session`.
 ///
 /// # Examples
 ///
@@ -77,7 +101,8 @@ where
 ///
 /// # Errors
 ///
-/// Will return `Err` if `value` is an invalid base64 string or data deserialization fails.
+/// Returns `Err` if `value` is not valid base64 (see [`DecodeError`]),
+/// or the payload fails to deserialize.
 ///
 /// ```
 /// use grammers_session::storages::MemorySession;

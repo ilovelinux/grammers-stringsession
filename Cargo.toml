@@ -4,6 +4,7 @@ authors = ["Antonio Spadaro"]
 name = "grammers-stringsession"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.93"
 description = "Export/restore a grammers session as a portable base64 string."
 repository = "https://codeberg.org/ilovelinux/grammers-stringsession"
 readme = "README.md"

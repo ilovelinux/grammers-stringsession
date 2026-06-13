@@ -1,6 +1,6 @@
 [package]
 
-authors = ["Antonio Spadaro"]
+authors = ["Antonio Spadaro <git@ilovelinux.dev>"]
 name = "grammers-stringsession"
 version = "0.1.0"
 edition = "2024"

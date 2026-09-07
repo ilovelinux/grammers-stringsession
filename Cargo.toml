@@ -4,7 +4,7 @@ authors = ["Antonio Spadaro <git@ilovelinux.dev>"]
 name = "grammers-stringsession"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.93"
+rust-version = "1.95"
 description = "Export/restore a grammers session as a portable base64 string."
 repository = "https://codeberg.org/ilovelinux/grammers-stringsession"
 readme = "README.md"
@@ -15,13 +15,19 @@ publish = true
 
 [dependencies]
 base64 = "0.21"
-grammers-session = { version = "0.9.0", features = ["serde"], default-features = false }
+grammers-session-0_9_0 = { package = "grammers-session", version = "0.9.0", features = ["serde"], default-features = false, optional = true }
+grammers-session = { version = "0.10.0", features = ["serde"], default-features = false, optional = true }
 postcard = { version = "1.0.8", features = ["use-std"], default-features = false }
 
 [dev-dependencies]
 tokio = { version = "1.52.3", features = ["macros", "rt", "rt-multi-thread"] }
 tokio-test = "0.4.5"
 criterion = { version = "0.8.2", features = ["html_reports", "async_tokio"] }
+
+[features]
+default = ["grammers-session"]
+"grammers-session-0.9.0" = ["dep:grammers-session-0_9_0"]
+"grammers-session" = ["dep:grammers-session"]
 
 [[bench]]
 name = "main_benchmark"

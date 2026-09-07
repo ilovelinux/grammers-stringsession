@@ -13,6 +13,10 @@ cargo add grammers-stringsession
 ## Example
 
 ```rust
+# #[cfg(feature = "grammers-session-0.9.0")]
+# extern crate grammers_session_0_9_0 as grammers_session;
+# #[cfg(feature = "grammers-session-git")]
+# extern crate grammers_session_git as grammers_session;
 use grammers_session::storages::MemorySession;
 use grammers_stringsession::{export, restore};
 

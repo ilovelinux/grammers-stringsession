@@ -8,7 +8,7 @@ format version), so older strings remain decodable as the format evolves.
 
 # Examples
 
-```
+```rust
 # #[cfg(feature = "grammers-session-0.9.0")]
 # extern crate grammers_session_0_9_0 as grammers_session;
 # #[cfg(feature = "grammers-session-git")]

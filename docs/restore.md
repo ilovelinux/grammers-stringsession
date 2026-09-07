@@ -4,7 +4,7 @@ The session is decoded from `value` and imported into `session`.
 
 # Examples
 
-```
+```rust
 # #[cfg(feature = "grammers-session-0.9.0")]
 # extern crate grammers_session_0_9_0 as grammers_session;
 # #[cfg(feature = "grammers-session-git")]
@@ -29,7 +29,7 @@ grammers_stringsession::restore(&session, string_session).await.unwrap();
 Returns `Err` if `value` is not valid base64 (see [`DecodeError`]),
 or the payload fails to deserialize.
 
-```
+```rust
 # #[cfg(feature = "grammers-session-0.9.0")]
 # extern crate grammers_session_0_9_0 as grammers_session;
 # #[cfg(feature = "grammers-session-git")]

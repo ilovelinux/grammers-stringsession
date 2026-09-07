@@ -10,6 +10,13 @@ Inspired by Telethon's `StringSession`.
 cargo add grammers-stringsession
 ```
 
+## Compatibility matrix
+
+|`feature`|gramme.rs version|
+|:---|:---|
+|`grammers-session-0.9.0`|`~0.9.0`|
+|`grammers-session` (default)|`~0.10.0`|
+
 ## Example
 
 ```rust

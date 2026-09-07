@@ -1,8 +1,8 @@
 # grammers-stringsession
 
-Export and restore a [grammers session] as a portable, versioned base64 string.
+Export and restore a [gramme.rs session] as a portable, versioned base64 string.
 
-Inspired by Telethon's `StringSession`.
+Inspired by [Telethon's `StringSession`].
 
 ## Install
 
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 }
 ```
 
-See the [`crate::export`] and [`crate::restore`] documentation for more details.
+See the [`export`] and [`restore`] documentation for more details.
 
 ## Format
 
@@ -53,4 +53,5 @@ format evolves.
 
 Licensed under either MIT or Apache-2.0 at your option.
 
-[grammers session]: https://docs.rs/grammers-session
+[gramme.rs session]: https://docs.rs/grammers-session
+[Telethon's `StringSession`]: https://codeberg.org/Lonami/Telethon/src/branch/v1/telethon/sessions/string.py

@@ -1,0 +1,117 @@
+when:
+  - event: pull_request
+  - event: push
+    branch: main
+  - event: cron
+    cron: cron_daily
+  - event: manual
+
+variables:
+  RUST_ENV: &RUST_ENV
+    CARGO_BUILD_JOBS : 4
+    CARGO_TERM_VERBOSE: true
+    CARGO_TERM_COLOR: always
+    RUST_BACKTRACE: 1
+
+matrix:
+  RUST_IMAGE:
+    - rust:1.95.0 # Minimum supported Rust version
+    - rust:latest # Latest stable Rust version
+    - rustlang/rust:nightly # Nightly Rust version
+  FEATURE:
+    - grammers-session
+    - grammers-session-0.9.0
+    - grammers-session-latest
+    - grammers-session-git
+  UPGRADE_RECURSIVELY:
+    - true
+    - false
+
+steps:
+  - name: Set up Rust
+    image: &BASE_IMAGE docker.io/${RUST_IMAGE}
+    pull: true
+    environment: *RUST_ENV
+    commands:
+      - rustup show
+      - rustc --version
+      - cargo --version
+
+  - # This step is needed when running it locally, as the repository may be dirty.
+    # Since we're going to modify Cargo.toml in the next step, we need to ensure that it's clean before proceeding.
+    name: Check for `Cargo.toml` changes
+    image: *BASE_IMAGE
+    # Run this step only locally.
+    when:
+      - evaluate: 'CI_PIPELINE_NUMBER == "0"'
+    commands:
+      - git diff --exit-code Cargo.toml
+      - echo "Cargo.toml is clean, continuing."
+
+  - name: Patch `grammers-session` to use the latest git version
+    image: *BASE_IMAGE
+    when:
+      - matrix:
+          FEATURE: grammers-session-git
+    commands:
+      - |
+        echo """
+        [patch.crates-io]
+        grammers-session = { git = 'https://github.com/Lonami/grammers.git' }
+        """ >> Cargo.toml
+
+  - name: Upgrade `grammers-session` to the very latest cargo version
+    image: *BASE_IMAGE
+    environment: *RUST_ENV
+    when:
+      - matrix:
+          FEATURE: grammers-session-latest
+    commands:
+      - cargo install cargo-edit
+      - cargo upgrade --incompatible --package grammers-session
+
+  - name: Upgrade dependencies
+    image: *BASE_IMAGE
+    environment: *RUST_ENV
+    when:
+      - matrix:
+          UPGRADE_RECURSIVELY: false
+    commands:
+      - cargo update --recursive
+
+  - name: Upgrade dependencies recursively
+    image: *BASE_IMAGE
+    environment: *RUST_ENV
+    when:
+      - matrix:
+          UPGRADE_RECURSIVELY: true
+    commands:
+      - cargo install --no-default-features --features upgrade cargo-edit
+      - cargo upgrade --incompatible --recursive --exclude grammers-session,grammers-session-0.9.0
+
+  - name: Fetch dependencies
+    image: *BASE_IMAGE
+    environment: *RUST_ENV
+    commands:
+      - cargo fetch
+
+  - name: Build tests
+    image: *BASE_IMAGE
+    environment: *RUST_ENV
+    commands:
+      - echo "${FEATURE}" | sed -E 's/-(latest|git)$//' > .feature
+      - cargo test --no-default-features --features $(cat .feature) --no-run
+
+  - name: Run tests
+    image: *BASE_IMAGE
+    environment: *RUST_ENV
+    commands:
+      - cargo test --no-fail-fast --no-default-features --features $(cat .feature)
+
+  - name: Restore Cargo.toml
+    image: *BASE_IMAGE
+    # As above
+    when:
+      - evaluate: 'CI_PIPELINE_NUMBER == "0"'
+    commands:
+      - git restore Cargo.toml

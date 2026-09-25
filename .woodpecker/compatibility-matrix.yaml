@@ -94,12 +94,13 @@ steps:
     environment: *RUST_ENV
     commands:
       - cargo fetch
+      - echo "${FEATURE}" | sed -E 's/-(latest|git)$//' > .feature
+      - cargo tree --no-default-features --features $(cat .feature)
 
   - name: Build tests
     image: *BASE_IMAGE
     environment: *RUST_ENV
     commands:
-      - echo "${FEATURE}" | sed -E 's/-(latest|git)$//' > .feature
       - cargo test --no-default-features --features $(cat .feature) --no-run
 
   - name: Run tests

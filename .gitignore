@@ -21,3 +21,7 @@ target
 #.idea/
 
 Cargo.lock
+
+# Used in the compatibility matrix Woodpecker CI to store the feature
+# being tested and share it among all the steps of the pipeline.
+.feature

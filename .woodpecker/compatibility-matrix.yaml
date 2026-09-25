@@ -57,7 +57,7 @@ steps:
       - |
         echo """
         [patch.crates-io]
-        grammers-session = { git = 'https://github.com/Lonami/grammers.git' }
+        grammers-session = { git = 'https://codeberg.org/Lonami/grammers.git' }
         """ >> Cargo.toml
 
   - name: Upgrade `grammers-session` to the very latest cargo version
